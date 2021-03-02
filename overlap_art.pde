@@ -19,7 +19,7 @@ void setup() {
   String url2 = "https://ak.picdn.net/shutterstock/videos/1023357436/thumb/1.jpg";
 
   String url = "https://cdn.shopify.com/s/files/1/1048/4232/products/Ennerdale-70-Diamond-Black-White_1024x1024.png?v=1528113928";
-
+  
 /*
   shapes.add(new Ball(0, 0, 80)
     .align(Direction.MIDDLE)
@@ -38,8 +38,8 @@ void setup() {
     .direct(Direction.RIGHT)
     ); //go right
     */
-    shapes.add(new ShapePattern(new Ball(0, 0, 30), 10, 10).direct(Direction.RIGHT).shake());
-    shapes.add(new ShapePattern(new Ball(0, 0, 13), 11, 9).direct(Direction.UP).shake());
+    shapes.add(new ShapePattern(new Ball(0, 0, 30), 9, 13).direct(Direction.RIGHT).shake(10));
+    shapes.add(new ShapePattern(new Ball(0, 0, 13), 11, 11).direct(Direction.LEFT).shake(10));
   //shapes.add(new Image(100, 400, 300, loadImage(url, "png")));
   //shapes.add(new Image(300, 300, 300, loadImage(url2, "png")));
   
@@ -88,7 +88,7 @@ void draw() {
   }
 
   if(!debug) {
-    loadPixels();
+    loadPixels(); //do this to access actual pixel array
   
     for (i = 0; i < height; i++) {
       for (ii = 0; ii < width; ii++) {
@@ -101,10 +101,10 @@ void draw() {
           pixels[pixelIndex] = color(0);
       }
     }
-    updatePixels();
+    updatePixels(); //do this to access make sure changes are drawn
   }
   
-  //saveFrame();
+  //saveFrame(); //saves the frame to a file in the folder
 
 }
 
