@@ -38,8 +38,8 @@ void setup() {
     .direct(Direction.RIGHT)
     ); //go right
     */
-    shapes.add(new ShapePattern(new Ball(0, 0, 30), 10, 10));
-    shapes.add(new ShapePattern(new Square(0, 0, 40), 11, 11));
+    shapes.add(new ShapePattern(new Ball(0, 0, 30), 10, 10).direct(Direction.RIGHT).shake());
+    shapes.add(new ShapePattern(new Ball(0, 0, 13), 11, 9).direct(Direction.UP).shake());
   //shapes.add(new Image(100, 400, 300, loadImage(url, "png")));
   //shapes.add(new Image(300, 300, 300, loadImage(url2, "png")));
   
@@ -103,6 +103,8 @@ void draw() {
     }
     updatePixels();
   }
+  
+  //saveFrame();
 
 }
 
@@ -116,7 +118,7 @@ interface Display {
 abstract class Shape implements Display {
   PVector position;
   PVector velocity;
-  float init_speed = 1;
+  float init_speed = 0.5;
   float radius;
   Shape(float x, float y, float r) {
     setPosition(new PVector((x + r)%width, (y + r)%height));
