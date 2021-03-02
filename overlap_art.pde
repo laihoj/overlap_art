@@ -20,19 +20,26 @@ void setup() {
 
   String url = "https://cdn.shopify.com/s/files/1/1048/4232/products/Ennerdale-70-Diamond-Black-White_1024x1024.png?v=1528113928";
 
+/*
   shapes.add(new Ball(0, 0, 80)
     .align(Direction.MIDDLE)
     .align(Direction.RIGHT)
     .direct(Direction.LEFT)
     .shake().shake().shake()
     );
+    */
   //shapes.add(new Ball(200, 400, 80));
   //shapes.add(new Ball(700, 400, 80));
+  
+  /*
   shapes.add(new Ball(700, 400, 80)
     .align(Direction.MIDDLE)
     .align(Direction.LEFT) //start left
     .direct(Direction.RIGHT)
     ); //go right
+    */
+    shapes.add(new ShapePattern(new Ball(0, 0, 30), 10, 10));
+    shapes.add(new ShapePattern(new Square(0, 0, 40), 11, 11));
   //shapes.add(new Image(100, 400, 300, loadImage(url, "png")));
   //shapes.add(new Image(300, 300, 300, loadImage(url2, "png")));
   
@@ -104,6 +111,7 @@ void draw() {
 interface Display {
   void display();
 }
+
 
 abstract class Shape implements Display {
   PVector position;
@@ -200,29 +208,21 @@ abstract class Shape implements Display {
     if (position.x > width-radius) {
       position.x = width-radius;
       velocity.x *= -1;
-
     } else if (position.x < radius) {
       position.x = radius;
       velocity.x *= -1;
-
-
     } else if (position.y > height-radius) {
       position.y = height-radius;
       velocity.y *= -1;
-
-
     } else if (position.y < radius) {
       position.y = radius;
       velocity.y *= -1;
-
-
     }
-
   }
 }
 
 
-class Ball extends Shape {
+class Ball extends Shape  {
 
   float radius, m;
 
@@ -292,6 +292,29 @@ abstract class Pattern extends Shape {
     position.y %= height/this.rows;
     if(position.x < 0) position.x = width/this.cols;
     if(position.y < 0) position.y = height/this.rows;
+  }
+}
+
+class ShapePattern extends Pattern {
+  Shape s; //shape is repeated in pattern
+  ShapePattern(Shape s, int cs, int rs) {
+    super(s.radius, cs, rs);
+    this.s = s;
+  }
+  void display() {
+    pushMatrix();
+    translate(position.x, position.y);
+   //index starting at -2 with overlapping shapes makes nicer wrap
+    for (int i = -2; i < this.rows + 2; i++) {
+      for (int ii = -2; ii < this.cols + 2; ii++) {
+        pushMatrix();
+        translate(ii*width/this.cols, i*height/this.rows);
+        
+        s.display();
+        popMatrix();
+      }
+    }
+    popMatrix();
   }
 }
 
