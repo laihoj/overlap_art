@@ -11,11 +11,18 @@ enum Direction {
   MIDDLE
 }
 
+enum DisplayMode {
+  INTERSECTION,
+  BORDER
+}
+
+DisplayEffect displayEffect = new DisplayEffect(DisplayMode.BORDER);
 
 void setup() {
   //fullScreen();
   size(700, 700);
-
+  smooth(4);
+  //noSmooth();
   String url2 = "https://ak.picdn.net/shutterstock/videos/1023357436/thumb/1.jpg";
 
   String url = "https://cdn.shopify.com/s/files/1/1048/4232/products/Ennerdale-70-Diamond-Black-White_1024x1024.png?v=1528113928";
@@ -36,10 +43,14 @@ void setup() {
     .align(Direction.MIDDLE)
     .align(Direction.LEFT) //start left
     .direct(Direction.RIGHT)
+    .shake(15)
     ); //go right
     */
-    shapes.add(new ShapePattern(new Ball(0, 0, 30), 9, 13).direct(Direction.RIGHT).shake(10));
-    shapes.add(new ShapePattern(new Ball(0, 0, 13), 11, 11).direct(Direction.LEFT).shake(10));
+  //  shapes.add(new ShapePattern(new Ball(0, 0, 80), 3, 4).direct(Direction.DOWN).shake(100).setSpeed(0.5));
+  //  shapes.add(new ShapePattern(new Ball(0, 0, 80), 4, 3).direct(Direction.LEFT).shake(10).setSpeed(0.5));
+    shapes.add(new ShapePattern(new Square(0, 0, 30), 15, 15).direct(Direction.RIGHT).shake(100).setSpeed(0.5));
+    shapes.add(new ShapePattern(new Square(0, 0, 30), 15, 15).direct(Direction.LEFT).shake(10).setSpeed(0.5));
+    
   //shapes.add(new Image(100, 400, 300, loadImage(url, "png")));
   //shapes.add(new Image(300, 300, 300, loadImage(url2, "png")));
   
@@ -88,6 +99,8 @@ void draw() {
   }
 
   if(!debug) {
+    displayEffect.applyEffect();
+    /*
     loadPixels(); //do this to access actual pixel array
   
     for (i = 0; i < height; i++) {
@@ -102,13 +115,46 @@ void draw() {
       }
     }
     updatePixels(); //do this to access make sure changes are drawn
+    */
   }
   
   //saveFrame(); //saves the frame to a file in the folder
 
 }
 
-
+class DisplayEffect {
+  DisplayMode display_mode;
+  DisplayEffect(DisplayMode dm) {
+    this.display_mode = dm;
+  }
+  void applyEffect() {
+    loadPixels(); //do this to access actual pixel array
+  
+    for (i = 0; i < height; i++) {
+      for (ii = 0; ii < width; ii++) {
+  
+        c = get(ii, i);
+        int pixelIndex = ii + i * width;
+        
+        switch(display_mode) {
+          case INTERSECTION:
+            if(c > 0xFF515151) //if enough shapes overlap, then pixel color will be brighter
+              pixels[pixelIndex] = color(255);
+            else
+              pixels[pixelIndex] = color(0);
+            break;
+          case BORDER:
+            if(c > 0xFF6C6C6C) //if enough shapes overlap, then pixel color will be brighter
+              pixels[pixelIndex] = color(200);
+            else
+              pixels[pixelIndex] = color(255);
+            break;
+        }
+      }
+    }
+    updatePixels(); //do this to access make sure changes are drawn
+  }
+}
 
 interface Display {
   void display();
@@ -151,9 +197,17 @@ abstract class Shape implements Display {
     return this;
   }
   
-  void setDirection(PVector p) {
+  Shape setDirection(PVector p) {
     this.velocity = p;
     this.velocity.mult(this.init_speed);
+    return this;
+
+  }
+  
+  Shape setSpeed(float speed) {
+    this.init_speed = speed;
+    setDirection(this.velocity);
+    return this;
   }
   
   Shape align(Direction d) {
@@ -192,13 +246,15 @@ abstract class Shape implements Display {
     return shake(i-1);
   }
   
-  void setPosition(float x, float y) {
+  Shape setPosition(float x, float y) {
     this.position.x = x;
     this.position.y = y;
+    return this;
   }
   
-  void setPosition(PVector p) {
+  Shape setPosition(PVector p) {
     this.position = p;
+    return this;
   }
   
   void update() {
@@ -206,7 +262,6 @@ abstract class Shape implements Display {
   }
   
   void checkBoundaryCollision() {
-
     if (position.x > width-radius) {
       position.x = width-radius;
       velocity.x *= -1;
@@ -225,19 +280,17 @@ abstract class Shape implements Display {
 
 
 class Ball extends Shape  {
-
   float radius, m;
-
   Ball(float x, float y, float r_) {
     super(x,y, r_);
-
     radius = r_;
     m = radius*.1;
   }
 
   void display() {
-    noStroke();
+    stroke(220,  50);
     fill(205,  50);
+//    if(displayEffect.display_mode == DisplayMode.BORDER) noFill();
     ellipseMode(CENTER);  // Set rectMode to RADIUS
     ellipse(position.x, position.y, radius*2, radius*2);
   }
@@ -245,21 +298,19 @@ class Ball extends Shape  {
 
 
 class Square extends Shape {
-
   float radius;
-
   Square(float x, float y, float radius) {
     super(x,y, radius);
-
-  this.radius = radius;
-  
+    this.radius = radius;
   }
 
   void display() {
-    noStroke();
+//    noStroke();
+    stroke(220,  50);
+
     fill(205,  50);
     rectMode(CENTER);  // Set rectMode to RADIUS
-    rect(position.x, position.y, radius, radius, 7);  // Draw white rect using RADIUS mode
+    rect(position.x, position.y, radius, radius, 9);  // Draw white rect using RADIUS mode
   }
 }
 
@@ -319,7 +370,7 @@ class ShapePattern extends Pattern {
     popMatrix();
   }
 }
-
+/*
 class CheckerPattern extends Pattern {
   
   CheckerPattern(float r, int cs, int rs) {
@@ -338,7 +389,8 @@ class CheckerPattern extends Pattern {
     }
   }
 }
-
+*/
+/*
 class DotPattern extends Pattern {
   
   DotPattern(float r, int cs, int rs) {
@@ -357,3 +409,4 @@ class DotPattern extends Pattern {
     }
   }
 }
+*/
